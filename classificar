@@ -1,0 +1,45 @@
+#!/bin/bash
+
+APP_HOME=`pwd`
+CLASS_PATH=$APP_HOME/weka.jar:$APP_HOME/src
+
+usage() {
+    echo -e 'Utilização: classificar [-options] TecnicaClassificacao dirTreino dirTeste\n'
+    echo -e 'Técnicas de classificação: '
+    echo -e 'NaiveBayes \t\t\t-- Naive Bayes Classifier'
+    echo -e 'NNge \t\t\t\t-- Nearest Neighbor Classifier'
+    echo -e 'DecisionStump \t\t\t-- Decision Stump Classifier'
+    echo -e 'MultilayerPerceptron \t\t-- Sigmoid Neural Network Classifier'
+    echo -e 'ClassificationViaClustering \t\t-- Clustering Classifier\n'
+}
+
+function run () {
+        if [ $2 ] && [ $3 ] && [ $4 ]
+            then    java -Xmx1024m -cp $CLASS_PATH ImagesClassifier ""$1 ""$2 ""$3  ""$4
+            else    usage
+            exit 1
+    fi
+}
+
+cd $APP_HOME/src
+
+if [ ! -f ImagesClassifier.class ] ; then
+    echo "Compilando projeto..."
+    javac -cp $CLASS_PATH ImagesClassifier.java
+fi
+
+while getopts "hv" arg; do
+    case $arg in
+        h)
+            usage
+            exit 0;;
+        v)
+            run "true" $2 $3 $4
+            exit 0;;
+        *)
+            echo "Digite: -h para ajuda or -v para verbose"
+            exit 1;;
+    esac
+done
+
+run "false" $1 $2 $3
